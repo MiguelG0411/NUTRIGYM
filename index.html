@@ -592,11 +592,11 @@ body.mod-gym .hoja,body.mod-gym .velo,body.mod-gym .fig{transition:none}}
   <div class="entradas">
     <div class="campo">
       <label for="inKg">Peso (kg)</label>
-      <div class="stepper"><button data-s="kg" data-d="-2.5" aria-label="Menos peso">−</button><input id="inKg" type="number" inputmode="decimal" step="0.5" min="0"><button data-s="kg" data-d="2.5" aria-label="Más peso">+</button></div>
+      <div class="stepper"><button data-s="kg" data-d="-2.5" aria-label="Menos peso">−</button><input id="inKg" type="text" data-dec autocomplete="off" inputmode="decimal" step="0.5" min="0"><button data-s="kg" data-d="2.5" aria-label="Más peso">+</button></div>
     </div>
     <div class="campo">
       <label for="inReps">Repeticiones</label>
-      <div class="stepper"><button data-s="reps" data-d="-1" aria-label="Menos repeticiones">−</button><input id="inReps" type="number" inputmode="numeric" step="1" min="0"><button data-s="reps" data-d="1" aria-label="Más repeticiones">+</button></div>
+      <div class="stepper"><button data-s="reps" data-d="-1" aria-label="Menos repeticiones">−</button><input id="inReps" type="text" data-dec autocomplete="off" inputmode="numeric" step="1" min="0"><button data-s="reps" data-d="1" aria-label="Más repeticiones">+</button></div>
     </div>
   </div>
   <button class="btn" id="guardarSerie">Guardar serie</button>
@@ -958,12 +958,12 @@ function renderPeso(){
   view.innerHTML=`
   <section class="panel"><h2>Registrar peso</h2>
     <div class="pw-grid"><div class="field"><label for="pw_f">Fecha</label><input class="input" id="pw_f" type="date" value="${todayISO()}" max="${todayISO()}"></div>
-    <div class="field"><label for="pw_kg">Peso (kg)</label><input class="input" id="pw_kg" type="number" inputmode="decimal" step="0.1" min="20" max="350" placeholder="${last?fmt1(last.kg):"Ej: 94,2"}"></div></div>
+    <div class="field"><label for="pw_kg">Peso (kg)</label><input class="input" id="pw_kg" type="text" data-dec autocomplete="off" inputmode="decimal" step="0.1" min="20" max="350" placeholder="${last?fmt1(last.kg):"Ej: 94,2"}"></div></div>
     <button class="btn primary" id="pw_save" style="width:100%">Guardar peso</button>
     <p class="small muted" style="margin-bottom:0">Al registrar tu peso más reciente, tus metas se recalculan con ese peso. Para comparar bien, pésate a la misma hora, idealmente en ayunas.</p>
   </section>
   <section class="panel"><h2>Evolución</h2>${n?stats+pesoChart(it,meta):`<div class="empty">Registra tu primer peso para ver cómo va cambiando.</div>`}
-    <div class="field" style="margin:14px 0 0"><label for="pw_meta">Peso objetivo (opcional, kg)</label><input class="input" id="pw_meta" type="number" inputmode="decimal" step="0.1" value="${meta??""}" placeholder="Ej: 85"></div>
+    <div class="field" style="margin:14px 0 0"><label for="pw_meta">Peso objetivo (opcional, kg)</label><input class="input" id="pw_meta" type="text" data-dec autocomplete="off" inputmode="decimal" step="0.1" value="${meta??""}" placeholder="Ej: 85"></div>
   </section>
   ${n?`<section class="panel"><h2>Registros</h2><div class="tblwrap"><table><thead><tr><th>Fecha</th><th class="n">Peso</th><th class="n">Cambio</th><th></th></tr></thead><tbody>${it.map((x,i)=>({x,d:i?x.kg-it[i-1].kg:null})).reverse().map(({x,d})=>`<tr><td style="white-space:nowrap">${parseISO(x.fecha).toLocaleDateString("es-CL",{day:"numeric",month:"short",year:"2-digit"})}</td><td class="n" style="white-space:nowrap">${fmt1(x.kg)} kg</td><td class="n ${d>0?"over":""}">${d==null?"–":(d>0?"+":d<0?"−":"")+fmt1(Math.abs(d))}</td><td class="n"><button class="chip" style="padding:2px 8px;font-size:.75rem" data-delpeso="${x.fecha}">Eliminar</button></td></tr>`).join("")}</tbody></table></div></section>`:""}`;
 }
@@ -1014,7 +1014,7 @@ function openFreeEdit(k){
   const cur=freePer100(k); const hasOv=S.azL&&S.azL[k]!=null;
   openSheet(`<h2>${esc(f.k)}</h2>
     <p class="small muted" style="margin-top:-4px">Tiene ${fmt1(f.n[3])} g de azúcares por 100 g. Indica cuánto de eso es azúcar añadido (o de miel, jarabe o jugo). Lo propio de la fruta, las verduras o la leche no cuenta para el límite de la OMS.</p>
-    <div class="field"><label for="fe_v">Azúcar libre por 100 g</label><input class="input" id="fe_v" type="number" inputmode="decimal" min="0" max="${f.n[3]||100}" step="any" value="${cur}"></div>
+    <div class="field"><label for="fe_v">Azúcar libre por 100 g</label><input class="input" id="fe_v" type="text" data-dec autocomplete="off" inputmode="decimal" min="0" max="${f.n[3]||100}" step="any" value="${cur}"></div>
     <div class="addline" style="margin-bottom:14px"><button class="chip" id="fe_all">Todo es añadido (${fmt1(f.n[3])} g)</button><button class="chip" id="fe_none">Todo es natural (0 g)</button></div>
     <p class="small muted">Valor automático de la app: ${fmt1(auto)} g.</p>
     <div class="row between" style="flex-wrap:wrap;gap:8px"><button class="btn" id="fe_reset" ${hasOv?"":"disabled"}>Usar valor automático</button><div class="row"><button class="btn" id="fe_c">Cancelar</button><button class="btn primary" id="fe_s">Guardar</button></div></div>`);
@@ -1040,7 +1040,7 @@ function renderFoods(){
     <div class="grid2"><div class="field"><label for="cf_n">Nombre</label><input class="input" id="cf_n" placeholder="Ej: Pan amasado"></div>
       <div class="field"><label for="cf_t">Tipo</label><select class="input" id="cf_t"><option>Crudo</option><option>Cocido</option><option selected>Preparado</option></select></div></div>
     <div class="grid3">
-      ${[["kcal","Calorías (kcal)"],["pr","Proteínas (g)"],["gr","Grasas (g)"],["ch","Carbohidratos (g)"],["az","Azúcares totales (g)"],["al","De ellos, añadidos (g)"],["na","Sodio (mg)"]].map(([k,l])=>`<div class="field"><label for="cf_${k}">${l}</label><input class="input" id="cf_${k}" type="number" inputmode="decimal" min="0" step="any"></div>`).join("")}
+      ${[["kcal","Calorías (kcal)"],["pr","Proteínas (g)"],["gr","Grasas (g)"],["ch","Carbohidratos (g)"],["az","Azúcares totales (g)"],["al","De ellos, añadidos (g)"],["na","Sodio (mg)"]].map(([k,l])=>`<div class="field"><label for="cf_${k}">${l}</label><input class="input" id="cf_${k}" type="text" data-dec autocomplete="off" inputmode="decimal" min="0" step="any"></div>`).join("")}
     </div>
     <button class="btn primary" id="cf_save">Guardar alimento</button>
   </section>`;
@@ -1051,7 +1051,7 @@ function renderFoods(){
 /* ----- Perfil / calculadora ----- */
 function renderPerfil(){
   const p=S.perfil, c=calc();
-  const num=(k,l,step="any",suf="")=>`<div class="field"><label for="p_${k}">${l}</label><input class="input" id="p_${k}" data-p="${k}" type="number" inputmode="decimal" step="${step}" value="${esc(p[k])}">${suf}</div>`;
+  const num=(k,l,step="any",suf="")=>`<div class="field"><label for="p_${k}">${l}</label><input class="input" id="p_${k}" data-p="${k}" type="text" data-dec autocomplete="off" inputmode="decimal" step="${step}" value="${esc(p[k])}">${suf}</div>`;
   view.innerHTML = `
   <section class="panel"><h2>Tus datos</h2>
     <div class="grid3">${num("peso","Peso (kg)")}${num("talla","Talla (cm)")}${num("edad","Edad (años)","1")}</div>
@@ -1115,7 +1115,7 @@ function openAdd(meal){
     const f=st.food;
     sel.innerHTML=`<div class="panel" style="background:var(--surface2);margin-bottom:10px">
       <div class="row between"><div><strong>${esc(f.name)}</strong> <span class="muted small">${esc(f.tipo)}</span></div><button class="chip" id="sh_change">Cambiar</button></div>
-      <div class="field" style="margin:12px 0 10px"><label for="sh_g">Peso consumido (g)</label><input class="input" id="sh_g" type="number" inputmode="decimal" min="0" step="any" value="${g||""}" placeholder="Ej: 150"></div>
+      <div class="field" style="margin:12px 0 10px"><label for="sh_g">Peso consumido (g)</label><input class="input" id="sh_g" type="text" data-dec autocomplete="off" inputmode="decimal" min="0" step="any" value="${g||""}" placeholder="Ej: 150"></div>
       <div class="preview" id="sh_prev"></div>
       <button class="btn primary" id="sh_add" style="width:100%">Agregar a ${st.meal.toLowerCase()}</button></div>`;
     const gi=sel.querySelector("#sh_g");
@@ -1142,7 +1142,7 @@ function openAdd(meal){
 function openEdit(id){
   const d=S.days[S.date]; const it=d?.items.find(i=>i.id===id); if(!it) return;
   openSheet(`<h2>${esc(it.k)}</h2>
-    <div class="field"><label for="ed_g">Peso consumido (g)</label><input class="input" id="ed_g" type="number" inputmode="decimal" min="0" step="any" value="${it.g}"></div>
+    <div class="field"><label for="ed_g">Peso consumido (g)</label><input class="input" id="ed_g" type="text" data-dec autocomplete="off" inputmode="decimal" min="0" step="any" value="${it.g}"></div>
     <div class="field"><label for="ed_m">Comida</label><select class="input" id="ed_m">${MEALS.map(m=>`<option ${m===it.comida?"selected":""}>${m}</option>`).join("")}</select></div>
     <div class="row between" style="margin-top:6px"><button class="btn danger" id="ed_del">Eliminar</button><div class="row"><button class="btn" id="ed_c">Cancelar</button><button class="btn primary" id="ed_s">Guardar cambios</button></div></div>`);
   host.querySelector("#ed_c").onclick=closeSheet;
@@ -1770,6 +1770,17 @@ window.__gym={ ses:()=>datos.sesiones, G, setMin:(f,m)=>{ const s=datos.sesiones
 
 })();
 
+
+/* ===== Números con coma decimal (teclado del iPhone en español) ===== */
+document.addEventListener("input",e=>{
+  const t=e.target; if(!t||!t.matches||!t.matches("input[data-dec]")) return;
+  const v=t.value, pos=t.selectionStart;
+  const entero=t.getAttribute("inputmode")==="numeric";
+  let n=v.replace(/,/g,".").replace(entero?/[^0-9]/g:/[^0-9.]/g,"");
+  const i=n.indexOf("."); if(i>=0) n=n.slice(0,i+1)+n.slice(i+1).replace(/\./g,"");
+  if(n!==v){ t.value=n; const c=Math.min(pos??n.length,n.length); try{ t.setSelectionRange(c,c); }catch(_){} }
+},true);
+
 (()=>{
   const TOK={nutri:"nutricion",gym:"gimnasio",resumen:"resumen"};
   function setMod(m,fromHash){
@@ -1836,7 +1847,7 @@ window.__gym={ ses:()=>datos.sesiones, G, setMin:(f,m)=>{ const s=datos.sesiones
     if(d.g){
       h+=`<div class="chips">${d.g.groups.map(g=>`<span>${G[g]?G[g].n:g}</span>`).join("")}</div>
       <div class="kv"><span>Ejercicios y series</span><span>${d.g.ej} ejercicios, ${d.g.n} series</span></div>
-      <div class="kv"><span>Duración<br><small class="note" style="margin:0;font-weight:400">${d.g.custom?"la que indicaste":`estimada: ${MIN_POR_SERIE} min por serie con descanso`}</small></span><span class="dur"><input id="rsMin" type="number" inputmode="numeric" min="0" step="5" value="${Math.round(d.g.min)}" aria-label="Duración en minutos"> min</span></div>
+      <div class="kv"><span>Duración<br><small class="note" style="margin:0;font-weight:400">${d.g.custom?"la que indicaste":`estimada: ${MIN_POR_SERIE} min por serie con descanso`}</small></span><span class="dur"><input id="rsMin" type="text" data-dec autocomplete="off" inputmode="numeric" min="0" step="5" value="${Math.round(d.g.min)}" aria-label="Duración en minutos"> min</span></div>
       <div class="kv"><span>Intensidad (MET promedio)</span><span>${f1(d.g.met)}</span></div>
       <div class="kv"><span>Peso corporal usado</span><span>${f1(d.g.peso)} kg</span></div>
       <p class="note">Gasto = MET × peso × horas, igual que en tu Excel. Es una estimación; si cambias la duración por la real, el cálculo se ajusta.</p>`;
